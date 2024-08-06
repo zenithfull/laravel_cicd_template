@@ -4,14 +4,21 @@ on:
   push:
     branches-ignore:
       - main
+    paths:
+      - "**.php"
 
 jobs:
   phpstan:
     runs-on: ubuntu-latest
+    environment: staging
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      # ReviewDogのセットアップ
+      - name: Setup ReviewDog
+        uses: reviewdog/action-setup@v1.0.3
 
       # PHP環境のセットアップ
       - name: Setup PHP
@@ -24,5 +31,43 @@ jobs:
       - name: Composer install
         run: composer install
 
+      # PRの差分ファイル名のみを抽出
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v40
+        with:
+          files: |
+            **/*.php
+          separator: " "
+          # 差分の比較先（マージ先のブランチを指定してください）
+          base_sha: "main"
+
       - name: Run PHPStan
         run: vendor/bin/phpstan analyze
+
+      - name: Remove 'laravel/' from paths
+        id: remove-laravel-path
+        run: |
+          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
+          modified_files=$(echo "$changed_files" | sed 's|laravel/||g')
+          echo "Modified PHP files: $modified_files"
+          echo "::set-output name=modified_files::$modified_files"
+
+      # PHPファイルが変更されていない場合は、PHPStanをスキップさせる
+      - name: Check if PHP files have changed
+        id: check-changed
+        run: |
+          if [ -z "${{ steps.remove-laravel-path.outputs.modified_files }}" ]; then
+            echo "No PHP files have changed"
+            echo "::set-output name=skip::true"
+          else
+            echo "Changed PHP files: ${{ steps.remove-laravel-path.outputs.modified_files }}"
+            echo "::set-output name=skip::false"
+          fi
+
+      # PHPStan実行
+      - name: Run PHPStan for Changed Files
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.REVIEWDOG_TOKEN }}
+        if: ${{ steps.check-changed.outputs.skip == 'false' }}
+        run: ./vendor/bin/phpstan analyze -c phpstan.neon --memory-limit=1G --error-format=raw --no-progress ${{ steps.remove-laravel-path.outputs.modified_files }} | reviewdog -reporter=github-pr-review -f=phpstan
