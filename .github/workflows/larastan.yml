@@ -1,0 +1,28 @@
+name: LaraStan
+
+on:
+  push:
+    branches-ignore:
+      - main
+
+jobs:
+  phpstan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # PHP環境のセットアップ
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          tools: composer, cs2pr
+          coverage: none
+
+      - name: Composer install
+        run: composer install
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyze
