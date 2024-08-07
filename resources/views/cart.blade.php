@@ -52,7 +52,7 @@
         e.preventDefault();
         var ele = $(this);
         $.ajax({
-            url: '{{ route('update.sopping.cart') }}',
+            url: '{{ route('update.shopping.cart') }}',
             method: "patch",
             data: {
                 _token: '{{ csrf_token() }}', 
