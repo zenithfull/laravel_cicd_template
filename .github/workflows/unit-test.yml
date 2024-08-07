@@ -1,4 +1,4 @@
-name: LaraStan
+name: analyze and unit test
 
 on:
   push:
@@ -71,3 +71,7 @@ jobs:
           REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.REVIEWDOG_TOKEN }}
         if: ${{ steps.check-changed.outputs.skip == 'false' }}
         run: ./vendor/bin/phpstan analyze -c phpstan.neon --memory-limit=1G --error-format=raw --no-progress ${{ steps.remove-laravel-path.outputs.modified_files }} | reviewdog -reporter=github-pr-review -f=phpstan
+
+      # PHP Unit実行
+      - name: Run PHPUnit tests
+        uses: php-actions/phpunit@v4
