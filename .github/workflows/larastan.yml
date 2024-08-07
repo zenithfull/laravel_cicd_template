@@ -51,7 +51,7 @@ jobs:
           changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
           modified_files=$(echo "$changed_files" | sed 's|laravel/||g')
           echo "Modified PHP files: $modified_files"
-          echo "::set-output name=modified_files::$modified_files"
+          echo "modified_files=$modified_files" >> "$GITHUB_OUTPUT"
 
       # PHPファイルが変更されていない場合は、PHPStanをスキップさせる
       - name: Check if PHP files have changed
@@ -59,10 +59,10 @@ jobs:
         run: |
           if [ -z "${{ steps.remove-laravel-path.outputs.modified_files }}" ]; then
             echo "No PHP files have changed"
-            echo "::set-output name=skip::true"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "Changed PHP files: ${{ steps.remove-laravel-path.outputs.modified_files }}"
-            echo "::set-output name=skip::false"
+            echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
 
       # PHPStan実行
