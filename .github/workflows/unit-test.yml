@@ -41,7 +41,7 @@ jobs:
         with:
           php-version: "8.3"
           tools: composer, cs2pr
-          coverage: none
+          coverage: xdebug
 
       - name: Composer install
         run: composer install
@@ -98,6 +98,9 @@ jobs:
           DB_HOST: 127.0.0.1
 
       - name: Run PHPUnit tests
-        uses: php-actions/phpunit@v4
+        run: vendor/bin/phpunit --coverage-clover coverage.xml
         env:
           DB_HOST: 127.0.0.1
+
+      - name: Run octocov
+        uses: k1LoW/octocov-action@v0
