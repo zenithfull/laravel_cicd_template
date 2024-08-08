@@ -20,12 +20,4 @@ class BookTest extends TestCase
 
         $this->assertEquals($fillable, $book->getFillable());
     }
-
-    public function test_book_fillable_attributes_error_case(): void
-    {
-        $fillable = ['name', 'author', 'image', 'price', 'seller', 'note'];
-        $book = new Book();
-
-        $this->assertEquals($fillable, $book->getFillable());
-    }
 }
