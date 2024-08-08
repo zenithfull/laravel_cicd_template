@@ -37,6 +37,7 @@ class BookControllerTest extends TestCase
 
         $response = $this->get('/book/' . $book->id);
 
+        $response->assertStatus(302);
         $response->assertRedirect();
         $response->assertSessionHas('success', 'Book has been added to cart!');
 
@@ -48,4 +49,49 @@ class BookControllerTest extends TestCase
         $this->assertEquals($book->image, $cart[$book->id]['image']);
     }
 
+    public function test_updateCart_method_updates_cart_quantity()
+    {
+
+        $book = Book::factory()->create();
+        $cart = [$book->id => [
+            'name' => $book->name,
+            'quantity' => 1,
+            'price' => $book->price,
+            'image' => $book->image,
+        ]];
+        session(['cart' => $cart]);
+
+        $response = $this->patch('/update-shopping-cart', [
+            'id' => $book->id,
+            'quantity' => 2,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertSessionHas('success', 'Book added to cart.');
+
+        $updatedCart = session('cart');
+        $this->assertEquals(2, $updatedCart[$book->id]['quantity']);
+    }
+
+    public function test_deleteProduct_method_deletes_book_from_cart()
+    {
+        $book = Book::factory()->create();
+        $cart = [$book->id => [
+            'name' => $book->name,
+            'quantity' => 1,
+            'price' => $book->price,
+            'image' => $book->image,
+        ]];
+        session(['cart' => $cart]);
+
+        $response = $this->delete('/delete-cart-product', [
+            'id' => $book->id,
+        ]);
+
+        $response->assertStatus(200);
+        $response->assertSessionHas('success', 'Book successfully deleted.');
+
+        $updatedCart = session('cart');
+        $this->assertArrayNotHasKey($book->id, $updatedCart);
+    }
 }
