@@ -10,6 +10,21 @@ on:
 jobs:
   phpstan:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:5.7
+        ports:
+          - 13306:3306
+        env:
+          MYSQL_DATABASE: laravel
+          MYSQL_ROOT_PASSWORD: test
+        options: --health-cmd "mysqladmin ping -h localhost" --health-interval 20s --health-timeout 10s --health-retries 10
+    env:
+      DB_DATABASE: laravel
+      DB_USER_NAME: root
+      DB_PASSWORD: root
+
     environment: staging
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +45,10 @@ jobs:
 
       - name: Composer install
         run: composer install
+
+      # Databaseの設定
+      - name: Copy .env
+        run: php -r "file_exists('.env') || copy('.env.example', '.env.staging');"
 
       # PRの差分ファイル名のみを抽出
       - name: Get changed files
@@ -68,10 +87,17 @@ jobs:
       # PHPStan実行
       - name: Run PHPStan for Changed Files
         env:
-          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.REVIEWDOG_TOKEN }}
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.ACTION_TOKEN }}
         if: ${{ steps.check-changed.outputs.skip == 'false' }}
         run: ./vendor/bin/phpstan analyze -c phpstan.neon --memory-limit=1G --error-format=raw --no-progress ${{ steps.remove-laravel-path.outputs.modified_files }} | reviewdog -reporter=github-pr-review -f=phpstan
 
       # PHP Unit実行
+      - name: migrate
+        run: php artisan migrate --force
+        env:
+          DB_HOST: 127.0.0.1
+
       - name: Run PHPUnit tests
         uses: php-actions/phpunit@v4
+        env:
+          DB_HOST: 127.0.0.1
