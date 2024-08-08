@@ -46,9 +46,11 @@ jobs:
       - name: Composer install
         run: composer install
 
-      # Databaseの設定
+      # Laravelの設定
       - name: Copy .env
-        run: php -r "file_exists('.env') || copy('.env.example', '.env.staging');"
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan key:generate
 
       # PRの差分ファイル名のみを抽出
       - name: Get changed files
@@ -103,4 +105,4 @@ jobs:
           DB_HOST: 127.0.0.1
 
       - name: Run octocov
-        uses: k1LoW/octocov-action@v0
+        uses: k1LoW/octocov-action@v1
