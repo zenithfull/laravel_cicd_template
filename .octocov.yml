@@ -19,5 +19,3 @@ report:
     - artifact://${GITHUB_REPOSITORY}
 body:
   if: is_pull_request
-summary:
-  if: true
