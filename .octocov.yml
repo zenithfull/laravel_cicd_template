@@ -17,7 +17,3 @@ report:
   if: is_default_branch
   datastores:
     - artifact://${GITHUB_REPOSITORY}
-body:
-  if: is_pull_request
-summary:
-  if: true
