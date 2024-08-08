@@ -1,0 +1,23 @@
+coverage:
+  paths:
+    - coverage.xml
+codeToTestRatio:
+  code:
+    - "app/**/*.php"
+  test:
+    - "tests/**/*Test.php"
+testExecutionTime:
+  if: true
+diff:
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}
+comment:
+  if: is_pull_request
+report:
+  if: is_default_branch
+  datastores:
+    - artifact://${GITHUB_REPOSITORY}
+body:
+  if: is_pull_request
+summary:
+  if: true
