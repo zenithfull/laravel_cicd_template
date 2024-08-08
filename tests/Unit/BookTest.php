@@ -23,7 +23,7 @@ class BookTest extends TestCase
 
     public function test_book_fillable_attributes_error_case(): void
     {
-        $fillable = ['name', 'author', 'image', 'price', 'seller'];
+        $fillable = ['name', 'author', 'image', 'price', 'seller', 'note'];
         $book = new Book();
 
         $this->assertEquals($fillable, $book->getFillable());
