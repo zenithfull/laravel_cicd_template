@@ -11,7 +11,6 @@ class BookController extends Controller
     {
         $books = Book::All();
         return view('products', compact('books'));
-        $books = null;
     }
 
     public function bookCart()
