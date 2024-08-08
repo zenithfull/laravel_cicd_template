@@ -52,6 +52,7 @@ class BookControllerTest extends TestCase
     public function test_updateCart_method_updates_cart_quantity()
     {
 
+        /** @var Book $book */
         $book = Book::factory()->create();
         $cart = [$book->id => [
             'name' => $book->name,
@@ -75,6 +76,7 @@ class BookControllerTest extends TestCase
 
     public function test_deleteProduct_method_deletes_book_from_cart()
     {
+        /** @var Book $book */
         $book = Book::factory()->create();
         $cart = [$book->id => [
             'name' => $book->name,
