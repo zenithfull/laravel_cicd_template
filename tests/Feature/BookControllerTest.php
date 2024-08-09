@@ -11,6 +11,10 @@ class BookControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Summary of test_index_method_returns_view_with_books
+     * @return void
+     */
     public function test_index_method_returns_view_with_books()
     {
         $books = Book::factory()->count(3)->create();
@@ -22,6 +26,10 @@ class BookControllerTest extends TestCase
         $response->assertViewHas('books', $books);
     }
 
+    /**
+     * Summary of test_bookCart_method_returns_cart_view
+     * @return void
+     */
     public function test_bookCart_method_returns_cart_view()
     {
         $response = $this->get('/shopping-cart');
@@ -30,6 +38,10 @@ class BookControllerTest extends TestCase
         $response->assertViewIs('cart');
     }
 
+    /**
+     * Summary of test_addBooktoCart_method_adds_book_to_cart
+     * @return void
+     */
     public function test_addBooktoCart_method_adds_book_to_cart()
     {
         /** @var Book $book */
@@ -49,6 +61,10 @@ class BookControllerTest extends TestCase
         $this->assertEquals($book->image, $cart[$book->id]['image']);
     }
 
+    /**
+     * Summary of test_updateCart_method_updates_cart_quantity
+     * @return void
+     */
     public function test_updateCart_method_updates_cart_quantity()
     {
 
@@ -74,6 +90,10 @@ class BookControllerTest extends TestCase
         $this->assertEquals(2, $updatedCart[$book->id]['quantity']);
     }
 
+    /**
+     * Summary of test_deleteProduct_method_deletes_book_from_cart
+     * @return void
+     */
     public function test_deleteProduct_method_deletes_book_from_cart()
     {
         /** @var Book $book */
