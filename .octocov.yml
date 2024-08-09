@@ -17,5 +17,3 @@ report:
     - artifact://${GITHUB_REPOSITORY}
 comment:
   if: is_pull_request
-summary:
-  if: true
